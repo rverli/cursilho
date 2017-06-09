@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+<script src="http://cdn.jsdelivr.net/webjars/jquery/2.1.4/jquery.min.js"
+	th:src="@{/webjars/jquery/2.1.4/jquery.min.js}"></script>
+
+<script
+	src="http://cdn.jsdelivr.net/webjars/bootstrap/3.3.6/js/bootstrap.min.js"
+	th:src="@{/webjars/bootstrap/3.3.6/js/bootstrap.min.js}"
+	type="text/javascript"></script>
+</head>
+<body>
+	<!-- Admin List -->
+	<div th:fragment='list'>
+		<!-- Modal -->
+		<th:block th:switch="${isBooleanEditable}">
+			<div class="modal fade" id="myModal" tabindex="-1" role="dialog"
+				aria-labelledby="myModalLabel">
+				<div class="modal-dialog" role="document">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h4 class="modal-title" id="myModalLabel">Ativação de Usuário</h4>
+						</div>
+						<div class="modal-body">
+						<p>Você tem certeza que deseja <b>Ativar</b> Colaborador X?</p>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-default" data-dismiss="modal" th:text="#{app.web.button.label.cancel}">Cancelar</button>
+							<button type="button" class="btn btn-primary" th:text="#{app.web.button.label.confirm}">Confirmar</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</th:block>
+		<table class="table table-striped table-hover dataTable" th:attr="data-order=${page.sortString}">
+	          <thead>
+	              <tr>
+		              <th:block th:each="column,iterStat : ${page.metadata.columnCaptions}">
+		              	<th th:text="#{'__${column}__'}" th:attr="data-order=${page.metadata.columnAttributes[__${iterStat.index}__]}+',desc'">Column</th>
+		              </th:block>  
+	                  <th th:if="${!#strings.isEmpty(actions)} or ${!#strings.isEmpty(custom_actions_path)}" width="65" th:text="#{app.web.admin.actions.label}"></th>
+	              </tr>
+	          </thead>
+	          <tbody>
+	          <tr th:each="entity : ${page.content}">
+	          		<th:block th:each="attribute,iterStat : ${page.metadata.columnAttributes}" th:with="value=${page.metadata.formats[__${iterStat.index}__]}">
+	          		  <td th:if="${page.metadata.dateAttributes[__${iterStat.index}__]}" th:text="${__${value}__}" th:style="'text-align:center;'">Attribute</td>	
+	          		  <td th:if="${page.metadata.integerAttributes[__${iterStat.index}__]}" th:text="${__${value}__}" th:style="'text-align:right;'">Attribute</td>
+	          		  <td th:if="${page.metadata.decimalAttributes[__${iterStat.index}__]}" th:text="${__${value}__}" th:style="'text-align:right;'">Attribute</td>
+	                  <td th:if="${page.metadata.textAttributes[__${iterStat.index}__]}" th:text="${__${value}__}">Attribute</td>
+	                  <td th:if="${page.metadata.enumAttributes[__${iterStat.index}__]}" th:text="#{${entity.__${attribute}__.label}}">Attribute</td>
+	                  <td th:if="${page.metadata.booleanAttributes[__${iterStat.index}__]}">
+	                  		<th:block th:switch="${isBooleanEditable}">
+	                  			<th:block th:case="true">
+	                  				<input type="checkbox" data-toggle="modal" data-target="#myModal" class="tooltp activate"
+	                  					th:attr="data-content=#{__${'app.web.admin.table.active.modal.content.'}__ + ${page.metadata.entityName}(${entity['__${page.metadata.columnAttributes[0]}__']})}, data-title=#{__${'app.web.admin.table.active.modal.title.'}__ + ${page.metadata.entityName}}, data-id=${entity['__${page.metadata.attributeId}__']}" 
+	                  					th:checked="${entity.__${attribute}__}"/>
+	                  			</th:block>
+	                  			<th:block th:case="*">
+	                  				<span data-toggle="tooltip" th:attr="title= ${entity.__${attribute}__}? #{app.web.table.yes}: #{app.web.table.no}"><i
+										th:attr="class= ${entity.__${attribute}__}? 'fa fa-check-square-o':'fa fa-square-o'"
+										aria-hidden="true"></i></span>
+	                  			</th:block>
+	                  		</th:block>
+                  		</td>	          		  
+	                </th:block>	                
+	                  
+                  <td th:if="${!#strings.isEmpty(actions)} or ${!#strings.isEmpty(custom_actions_path)}">
+	                  <div class="btn-group btn-group-xs">
+							<span th:if="${!#strings.isEmpty(actions)}" class="btn-group btn-group-xs">
+								<a th:if="${#strings.contains(actions,'details')}" th:href="@{'details/' + ${entity['__${page.metadata.attributeId}__']}}"
+									class="btn btn-default" data-toggle="tooltip" th:attr="title=#{app.web.table.details}">
+									<i class="fa fa-search-plus" aria-hidden="true"></i> 
+								</a>
+								<a th:if="${#strings.contains(actions,'edit')}" th:href="@{'edit/' + ${entity['__${page.metadata.attributeId}__']}}"
+									class="btn btn-default" data-toggle="tooltip" th:attr="title=#{app.web.table.edit}">
+									<i class="fa fa-pencil" aria-hidden="true"></i> 
+								</a>
+								<a th:if="${#strings.contains(actions,'delete')}" th:href="@{'delete'}"
+									class="btn btn-default delete" data-toggle="modal" data-target="#myModal" 
+									th:attr="title=#{app.web.table.delete},data-content=#{__${'app.web.admin.table.confirmdelete.'}__ + ${page.metadata.entityName}(${entity['__${page.metadata.columnAttributes[0]}__']})}, data-title=#{__${'app.web.admin.table.delete.modal.title.'}__ + ${page.metadata.entityName}}, data-id=${entity['__${page.metadata.attributeId}__']}">
+									<i class="fa fa-times" aria-hidden="true"></i>
+								</a>
+							</span>
+							<th:block th:if="${!#strings.isEmpty(custom_actions_path)}">
+								<span th:replace="${custom_actions_path} :: custom_actions"></span>
+							</th:block>
+	                  </div>
+                  </td>
+	          </tr>
+	          </tbody>
+	      </table>
+		<script src="/js/admin.js" th:src="@{/js/admin.js}" type="text/javascript"></script>
+		<script src="/js/user.messages.js" th:src="@{/js/user.messages.js}" type="text/javascript"></script>
+	</div>
+</body>
+</html>

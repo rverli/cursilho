@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<head lang="en">
+
+<!-- <title th:title-pattern="$DECORATOR_TITLE" th:text="${pageTitle}">Page Title</title> -->
+<title th:text="#{app.web.admin.cursilhista.title.table}">List Retreat</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<link rel="shortcut icon" th:href="@{./static/img/favicon.ico}"/>
+
+<link
+	href="http://cdn.jsdelivr.net/webjars/bootstrap/3.3.6/css/bootstrap.min.css"
+	th:href="@{/webjars/bootstrap/3.3.6/css/bootstrap.min.css}"
+	rel="stylesheet" media="screen" />
+
+<link
+	href="http://cdn.jsdelivr.net/webjars/font-awesome/4.6.2/css/font-awesome.min.css"
+	th:href="@{/webjars/font-awesome/4.6.2/css/font-awesome.min.css}"
+	rel="stylesheet" media="screen" />
+	
+<link
+	href="/css/aqualis.css"
+	th:href="@{/css/aqualis.css}"
+	rel="stylesheet" media="screen" />
+	
+<script src="http://cdn.jsdelivr.net/webjars/jquery/2.1.4/jquery.min.js"
+	th:src="@{/webjars/jquery/2.1.4/jquery.min.js}" type="text/javascript"></script>
+
+<script type="text/javascript">
+function validate(evt) {
+	  var theEvent = evt || window.event;
+	  var key = theEvent.keyCode || theEvent.which;
+	  key = String.fromCharCode( key );
+	  var regex = /[0-9]|\./;
+	  if( !regex.test(key) ) {
+	    theEvent.returnValue = false;
+	    if(theEvent.preventDefault) theEvent.preventDefault();
+	  }
+	}
+</script>
+
+<script
+	src="http://cdn.jsdelivr.net/webjars/bootstrap/3.3.6/js/bootstrap.min.js"
+	th:src="@{/webjars/bootstrap/3.3.6/js/bootstrap.min.js}"
+	type="text/javascript"></script>
+
+</head>
+<body>
+
+	<div th:replace="fragments/header :: header">
+		<div class="navbar navbar-default navbar-fixed-top">
+			<div class="container">
+				<div class="navbar-header">
+					<a class="navbar-brand" href="#">Static header</a>
+				</div>
+				<div class="navbar-collapse collapse">
+					<ul class="nav navbar-nav">
+						<li class="active"><a href="#">Home</a></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="container">
+		<div id="user_messages" class="col-xs-12 col-sm-6 col-md-4 col-lg-3 pull-right">
+			<div th:replace="fragments/alerts :: alert"></div>
+		</div>
+		<div class="panel panel-default">
+			<!-- Default panel contents -->
+			<div class="panel-heading">
+				<span class="lead" th:text="#{app.web.admin.cursilhista.title.table}">Cursilhista
+					List</span>
+			</div>
+			
+				<div class="panel-body">
+					<form class="form-inline" role="form" th:action="@{${formAction}}" th:object="${retreats}" method="post">
+					
+							<div class="form-group">
+								<label for="numberCursilhista" th:text="#{app.web.cursilhista.numberCursilhista.label} + ':'">Número</label>
+								<input type="text" onkeypress='validate(event)' id="numberCursilhista" name="numberCursilhista" class="form-control"
+									placeholder="Name"
+									th:attr="value=${#httpServletRequest.getParameter('numberCursilhista')}, placeholder=#{app.web.cursilhista.numberCursilhista.label}" />							
+							</div>
+							
+							<div class="form-group">
+								<label for="name" th:text="#{app.web.cursilhista.name.label} + ':'">Nome</label>
+								<input type="text" id="name" name="name" class="form-control"
+									th:attr="value=${#httpServletRequest.getParameter('name')}, placeholder=#{app.web.cursilhista.name.label}" />
+							</div>
+							 
+							<div class="form-group">
+								<label for="numberRetreat" th:text="#{app.web.cursilhista.retreat.label} + ':'">Retiro</label>
+								<select id="numberRetreat" name="numberRetreat" class="form-control">
+									<option value="-1"></option>
+									<option th:each="c : ${retreats}" th:value="${c.number}"  th:text="${c.number}+'º - '+${c.type}+' - '+${c.sector}"></option>
+								</select>
+							</div>
+							
+							<div class="form-group">
+								<label for="active" th:text="#{app.web.cursilhista.active.label} + ':'">Active</label>
+								<select id="active" name="active" class="form-control">
+									<option ></option>
+									<option value="0" th:text="#{app.web.table.no}" th:selected="${#httpServletRequest.getParameter('active') == '0'}">No</option>
+									<option value="1" th:text="#{app.web.table.yes}" th:selected="${#httpServletRequest.getParameter('active') == '1'}">Yes</option>
+								</select>
+							</div>
+
+							<button type="submit" class="btn btn-primary">
+								<i class="fa fa-search" aria-hidden="true"></i>
+								<span class="hidden-xs" th:text="#{app.web.admin.button.search}">Search</span>
+							</button>
+					</form>
+				</div>
+
+				<div class="panel-body">
+					<a th:href="@{add}" class="btn btn-primary btn-sm"><i
+						class="fa fa-plus" aria-hidden="true"></i> <span
+						th:text="#{app.web.admin.addCursilhista}">Adicionar</span></a>
+				</div>
+				<div class="table-responsive">
+				<div id="table" class="panel-content">
+					<div th:include="fragments/genericList :: list(isBooleanEditable=true, actions='details,edit,delete')"></div>
+				</div>
+				</div>
+				<div class="panel-footer">
+					<div th:replace="fragments/pagination :: pagination">pagination</div>
+				</div>
+			
+		</div>
+	</div>
+	<footer class="footer" th:replace="fragments/footer :: footer">
+		<div class="container">
+			<p class="text-muted">&copy; 2013 The Static Templates</p>
+		</div>
+	</footer>
+</body>
+</html>

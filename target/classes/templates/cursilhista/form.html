@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+<script src="http://cdn.jsdelivr.net/webjars/jquery/2.1.4/jquery.min.js"
+	th:src="@{/webjars/jquery/2.1.4/jquery.min.js}"></script>
+
+<script
+	src="http://cdn.jsdelivr.net/webjars/bootstrap/3.3.6/js/bootstrap.min.js"
+	th:src="@{/webjars/bootstrap/3.3.6/js/bootstrap.min.js}"
+	type="text/javascript"></script>
+
+<script th:src="@{/js/cursilhistaForm.js}" type="text/javascript"></script>
+
+</head>
+<body>
+	<!-- Cursilhista Form -->
+	<div class="col-sm-12" th:fragment='cursilhistaForm'>
+		
+		<form class="form" th:action="@{${formAction}}" th:object="${cursilhista}" method="post">
+						
+			<div id="user_messages" class="col-xs-12 col-sm-6 col-md-4 col-lg-3 pull-right">
+				<div th:replace="fragments/alerts :: alert"></div>
+			</div>
+			
+			<input type="hidden" name="id" id="id" th:field="*{id}"/>
+			<input type="hidden" name="dateCreate" id="dateCreate" th:field="*{dateCreate}"/>
+			<input type="hidden" name="dateLastUpdate" id="dateLastUpdate" th:field="*{dateLastUpdate}"/>
+						
+			<fieldset id="retreatS">
+				<legend th:text="#{app.web.cursilhista.form.retreat.info.label}">Retiro</legend>
+				
+				<!-- Número retiro -->			
+				<div class="col-sm-4 form-group">
+					<label for="selectRetreat" class="control-label" th:text="#{app.web.cursilhistaform.retreat} + ':'">Retiro:</label>
+		            <select id="selectRetreat" class="form-control" th:field="${cursilhista.retreat}" th:disabled="${isDetails}" required="required">
+	    	            <option value="-1">Selecione</option>
+		                <option th:each="c : ${retreats}" th:value="${c.id}"  th:text="${c.number}+'º - '+${c.type}+' - '+${c.sector}" th:selected="${c.id == cursilhista.retreat?.id}"></option>
+	            	</select>
+				</div>
+			
+				<!-- Número Cursilhista -->
+				<div th:class="${#fields.hasErrors('numberCursilhista')} ? 'col-sm-2  form-group has-error' : 'col-sm-2 form-group'">
+					<label for="numberCursilhista" class="control-label" th:text="#{app.web.cursilhista.numberCursilhista.label} + ':'">Número:</label>
+					<input type="text" onkeypress='validate(event)' class="form-control" id="numberCursilhista" name="numberCursilhista" th:field="*{numberCursilhista}" th:placeholder="#{app.web.cursilhista.numberCursilhista.label}" 
+						required="required" th:disabled="${isDetails}"/>
+				</div>
+			
+				<!-- Setor -->
+				<div th:class="${#fields.hasErrors('sector')} ? 'col-sm-2 form-group has-error' : 'col-sm-2 form-group'">
+					<label for="sector" class="control-label" th:text="#{app.web.cursilhista.sector.label} + ':'">Setor:</label>
+					<select id="sector" name="sector" class="form-control" th:field="*{sector}" th:disabled="${isDetails}">
+						<option value="">Selecione</option>
+						<option value="Norte">Norte</option>
+						<option value="Sul">Sul</option>						
+						<option value="Oeste">Oeste</option>
+						<option value="Suburbano">Suburbano</option>
+						<option value="Leopoldina">Leopoldina</option>
+						<option value="Jovem">Jovem</option>
+					 </select>					
+				</div>
+			
+				<!-- Comunidade -->
+				<div th:class="${#fields.hasErrors('community')} ? 'col-sm-6  form-group has-error' : 'col-sm-6 form-group'">
+					<label for="community" class="control-label" th:text="#{app.web.cursilhista.community.label} + ':'">Número:</label>
+					<input type="text" class="form-control" id="community" name="community" th:field="*{community}" 
+						th:placeholder="#{app.web.cursilhista.community.label}" th:disabled="${isDetails}"/>
+				</div>
+			
+			</fieldset>	
+			
+			<fieldset>
+				<legend id="info" th:text="#{app.web.cursilhista.form.pessoal.info.label}">Informações Pessoais</legend>
+				
+				<!-- Nome -->
+				<div th:class="${#fields.hasErrors('name')} ? 'col-sm-6 form-group has-error' : 'col-sm-6  form-group'">
+					<label for="name" class="control-label" th:text="'*' + #{app.web.cursilhista.name.label} + ':'">Nome:</label> <input type="text" class="form-control" id="name" name="name"
+						th:field="*{name}" th:placeholder="#{app.web.cursilhista.name.label}"
+						th:disabled="${isDetails}" />
+				</div>
+				
+				<!-- Apelido -->
+				<div th:class="${#fields.hasErrors('nickname')} ? 'col-sm-6 form-group has-error' : 'col-sm-6  form-group'">
+					<label for="name" class="control-label" th:text="#{app.web.cursilhista.nickname.label} + ':'">Nickname:</label> <input type="text" class="form-control" id="name" name="name"
+						th:field="*{nickname}" th:placeholder="#{app.web.cursilhista.nickname.label}"
+						th:disabled="${isDetails}" />
+				</div>
+				
+				<!-- Data de Nascimento -->
+				<div class="col-sm-3  form-group">
+					<label for="dateOfBirth" th:text="'*' + #{app.web.cursilhista.datebirth.label} + ':'">Data de Nascimento:</label>
+					<input type="date" id="dateOfBirth" class="form-control" th:value="${dateOfBirth}" th:field="*{dateOfBirth}" 
+						required="required" th:disabled="${isDetails}" th:placeholder="#{app.web.cursilhista.datebirth.label}"/>
+				</div>
+				
+				<!-- Identidade -->
+				<div th:class="${#fields.hasErrors('identity')} ? 'col-sm-2 form-group has-error' : 'col-sm-2 form-group'">
+					<label for="identity" class="control-label" th:text="#{app.web.cursilhista.identity.label} + ':'">Identidadae:</label>
+					<input type="text" onkeypress='validate(event)' class="form-control" id="identity" name="identity" th:field="*{identity}" th:placeholder="#{app.web.cursilhista.identity.label}" 
+						th:disabled="${isDetails}"/>
+				</div>
+				
+				<!-- CPF -->
+				<div th:class="${#fields.hasErrors('cpf')} ? 'col-sm-2 form-group has-error' : 'col-sm-2 form-group'">
+					<label for="cpf" class="control-label" th:text="#{app.web.cursilhista.cpf.label} + ':'">CPF:</label>
+					<input type="text" class="form-control cpf" id="cpf" name="cpf" th:field="*{cpf}" th:placeholder="#{app.web.cursilhista.cpf.label}" 
+						th:disabled="${isDetails}"/>
+				</div>
+				
+				<!-- email -->
+				<div th:class="${#fields.hasErrors('email')} ? 'col-sm-4 form-group has-error' : 'col-sm-4 form-group'">
+					<label for="email" class="control-label" th:text="#{app.web.cursilhista.email.label} + ':'">Email:</label>
+					<input type="text" class="form-control" id="email" name="email" th:field="*{email}" th:placeholder="#{app.web.cursilhista.email.label}" 
+						th:disabled="${isDetails}"/>
+				</div>
+				
+				<!-- Número de Telefone -->
+				<div th:class="${#fields.hasErrors('phoneNumber')} ? 'col-sm-2 form-group has-error' : 'col-sm-2 form-group'">
+					<label for="phoneNumber" class="control-label" th:text="#{app.web.cursilhista.phoneNumber.label} + ':'">Telefone:</label>
+					<input type="text" class="form-control" id="phoneNumber" name="phoneNumber" th:field="*{phoneNumber}" th:placeholder="#{app.web.cursilhista.phoneNumber.label}" 
+						th:disabled="${isDetails}"/>
+				</div>
+				
+				<!-- Número de Celular -->
+				<div th:class="${#fields.hasErrors('mobileNumber')} ? 'col-sm-2 form-group has-error' : 'col-sm-2 form-group'">
+					<label for="mobileNumber" class="control-label" th:text="#{app.web.cursilhista.mobileNumber.label} + ':'">Celular:</label>
+					<input type="text" class="form-control" id="mobileNumber" name="mobileNumber" th:field="*{mobileNumber}" th:placeholder="#{app.web.cursilhista.mobileNumber.label}" 
+						th:disabled="${isDetails}"/>
+				</div>
+				
+				<!-- Estado Civil -->
+				<div th:class="${#fields.hasErrors('maritalStatus')} ? 'col-sm-4 form-group has-error' : 'col-sm-4 form-group'">
+					<label for="maritalStatus" class="control-label" th:text="'*' + #{app.web.cursilhista.maritalStatus.label} + ':'">Estado Civil:</label>
+					<select id="maritalStatus" name="maritalStatus" class="form-control" th:field="*{maritalStatus}" th:disabled="${isDetails}">
+						<option value="">Selecione</option>
+						<option value="Casado(a) no Religioso">Casado(a) no Religioso</option>
+						<option value="Casado(a) no Civil">Casado(a) no Civil</option>
+						<option value="Companheiro(a)">Companheiro(a)</option>
+						<option value="Solteiro(a)">Solteiro(a)</option>
+						<option value="Divorciado(a)">Divorciado(a)</option>
+						<option value="Viúvo(a)">Viúvo(a)</option>
+						<option value="Separado(a)">Separado(a)</option>						
+						<option value="Outro">Outro</option>						
+					 </select>					
+				</div>
+				
+				<!-- Genero -->
+				<div th:class="${#fields.hasErrors('gender')} ? 'col-sm-2 form-group has-error' : 'col-sm-2 form-group'">
+					<label for="gender" class="control-label" th:text="'*' + #{app.web.cursilhista.gender.label} + ':'">Genero:</label>
+					<select id="gender" name="gender" class="form-control" th:field="*{gender}" required="required" th:disabled="${isDetails}">
+						<option value="">Selecione</option>
+						<option value="Masculino">Masculino</option>
+						<option value="Feminino">Feminino</option>
+					 </select>					
+				</div>
+								
+				<div class="col-sm-4 form-group">
+					<label class="control-label" th:for="${#ids.next('active')}" th:text="#{app.web.cursilhista.active.label} + ':'"> Ativo:</label>
+					<input type="checkbox" id="active" name="active" th:field="*{active}" th:disabled="${isDetails}"/>
+				</div>
+				
+			</fieldset>
+			
+			<fieldset id="addressS">
+				<legend th:text="#{app.web.cursilhista.form.main.address.label}">Endereço Cadastral</legend>
+				
+				<input type="hidden" id="address[0].id" name="address[0].id" th:field="*{address[0].id}" />
+				
+				<div th:class="${#fields.hasErrors('address[0].companyAddress')} ? 'col-sm-6 form-group has-error' : 'col-sm-6 form-group'">
+					<label for="address" class="control-label" th:text="'*' + #{app.web.cursilhista.address.label} + ':'">Endereço:</label>
+					<input type="text" class="form-control" id="address1" name="address1" th:field="*{address[0].companyAddress}" th:placeholder="#{app.web.cursilhista.address.label}" 
+						required="required" th:disabled="${isDetails}"/>
+				</div>
+	
+				<div th:class="${#fields.hasErrors('address[0].complement')} ? 'col-sm-4 form-group has-error' : 'col-sm-4 form-group'">
+					<label for="complement" class="control-label" th:text="#{app.web.cursilhista.complement.label} + ':'">Complemento:</label>
+					<input type="text" class="form-control" id="complement1" name="complement1" th:field="*{address[0].complement}" th:placeholder="#{app.web.cursilhista.complement.label}" 
+						th:disabled="${isDetails}"/>
+				</div>
+
+				<div th:class="${#fields.hasErrors('address[0].cep')} ? 'col-sm-2 form-group has-error' : 'col-sm-2 form-group'">
+					<label for="cep" class="control-label" th:text="'*' + #{app.web.cursilhista.cep.label} + ':'">CEP:</label>
+					<input type="text" class="form-control cep" id="cep1" name="cep1" th:field="*{address[0].cep}" th:placeholder="#{app.web.cursilhista.cep.label}" 
+						required="required" th:disabled="${isDetails}"/>
+				</div>
+	
+				<div th:class="${#fields.hasErrors('address[0].neighborhood')} ? 'col-sm-4 form-group has-error' : 'col-sm-4 form-group'">
+					<label for="neighborhood" class="control-label" th:text="'*' + #{app.web.cursilhista.neighborhood.label} + ':'">Bairro:</label>
+					<input type="text" class="form-control" id="neighborhood1" name="neighborhood1" th:field="*{address[0].neighborhood}" th:placeholder="#{app.web.cursilhista.neighborhood.label}" 
+						required="required" th:disabled="${isDetails}"/>
+				</div>
+	
+				<div th:class="${#fields.hasErrors('address[0].city')} ? 'col-sm-2 form-group has-error' : 'col-sm-2 form-group'">
+					<label for="city" class="control-label" th:text="'*' + #{app.web.cursilhista.city.label} + ':'">Cidade:</label>
+					<input type="text" class="form-control" id="city1" name="city1" th:field="*{address[0].city}" th:placeholder="#{app.web.cursilhista.city.label}" 
+						required="required" th:disabled="${isDetails}"/>
+				</div>
+	
+				<div th:class="${#fields.hasErrors('address[0].state')} ? 'col-sm-2 form-group has-error' : 'col-sm-2 form-group'">
+					<label for="state1" class="control-label" th:text="'*' + #{app.web.cursilhista.state.label} + ':'">Estado:</label>
+					<select id="state1" name="state1" class="form-control" th:field="*{address[0].state}" required="required" th:disabled="${isDetails}">
+						<option value="">Selecione</option>
+						<option value="AC">AC</option>
+						<option value="AL">AL</option>
+						<option value="AM">AM</option>
+						<option value="AP">AP</option>
+						<option value="BA">BA</option>
+						<option value="CE">CE</option>
+						<option value="DF">DF</option>
+						<option value="ES">ES</option>
+						<option value="GO">GO</option>
+						<option value="MA">MA</option>
+						<option value="MG">MG</option>
+						<option value="MS">MS</option>
+						<option value="MT">MT</option>
+						<option value="PA">PA</option>
+						<option value="PB">PB</option>
+						<option value="PE">PE</option>
+						<option value="PI">PI</option>
+						<option value="PR">PR</option>
+						<option value="RJ">RJ</option>
+						<option value="RN">RN</option>
+						<option value="RS">RS</option>
+						<option value="RO">RO</option>
+						<option value="RR">RR</option>
+						<option value="SC">SC</option>
+						<option value="SE">SE</option>
+						<option value="SP">SP</option>
+						<option value="TO">TO</option>
+					 </select>					
+				</div>
+
+				<input type="hidden" id="address[0].addressType" name="address[0].addressType" th:field="*{address[0].addressType}" />
+			</fieldset>			
+
+			<fieldset id="retreatS">
+				<legend th:text="#{app.web.cursilhista.form.profession.info.label}">Informacoes Profissionais</legend>
+				
+				<!-- Profissão -->
+				<div th:class="${#fields.hasErrors('profession')} ? 'col-sm-6 form-group has-error' : 'col-sm-6  form-group'">
+					<label for="name" class="control-label" th:text="'*' + #{app.web.cursilhista.profession.label} + ':'">Profissão:</label> 
+					<input type="text" class="form-control" id="profession" name="profession"
+						th:field="*{profession}" th:placeholder="#{app.web.cursilhista.profession.label}"
+						required="required" th:disabled="${isDetails}" />
+				</div>
+				
+				<!-- Empresa em que Trabalha -->
+				<div th:class="${#fields.hasErrors('profession')} ? 'col-sm-6 form-group has-error' : 'col-sm-6  form-group'">
+					<label for="companyWork" class="control-label" th:text="#{app.web.cursilhista.companywork.label} + ':'">Empresa em que Trabalha:</label> 
+					<input type="text" class="form-control" id="companyWork" name="companyWork"
+						th:field="*{companyWork}" th:placeholder="#{app.web.cursilhista.companywork.label}"
+						th:disabled="${isDetails}" />
+				</div>
+				
+				<!-- Função -->
+				<div th:class="${#fields.hasErrors('profession')} ? 'col-sm-6 form-group has-error' : 'col-sm-6  form-group'">
+					<label for="functionWork" class="control-label" th:text="#{app.web.cursilhista.functionwork.label} + ':'">Função:</label> 
+					<input type="text" class="form-control" id="functionWork" name="functionWork"
+						th:field="*{functionWork}" th:placeholder="#{app.web.cursilhista.functionwork.label}"
+						th:disabled="${isDetails}" />
+				</div>
+				
+				<!-- Telefone -->
+				<div th:class="${#fields.hasErrors('workNumber')} ? 'col-sm-2 form-group has-error' : 'col-sm-2 form-group'">
+					<label for="workNumber" class="control-label" th:text="#{app.web.cursilhista.workNumber.label} + ':'">Telefone:</label>
+					<input type="text" class="form-control" id="workNumber" name="workNumber" th:field="*{workNumber}" th:placeholder="#{app.web.cursilhista.workNumber.label}" 
+						th:disabled="${isDetails}"/>
+				</div>
+				
+			</fieldset>
+			
+			<fieldset id="addressS1">
+							
+				<legend th:text="#{app.web.cursilhista.form.professionaddress.info.label}">Endereço Profissional</legend> 
+				
+				<input type="hidden" id="address[1].id" name="address[1].id" th:field="*{address[1].id}" />
+					
+				<div th:class="${#fields.hasErrors('address[1].companyAddress')} ? 'col-sm-6 form-group has-error' : 'col-sm-6 form-group'">
+					<label for="address" class="control-label" th:text="#{app.web.cursilhista.address.label} + ':'">Endereço:</label>
+					<input type="text" class="form-control" id="address2" name="address2" th:field="*{address[1].companyAddress}" th:placeholder="#{app.web.cursilhista.address.label}" 
+						th:disabled="${isDetails}"/>
+				</div>
+	
+				<div th:class="${#fields.hasErrors('address[1].complement')} ? 'col-sm-4 form-group has-error' : 'col-sm-4 form-group'">
+					<label for="complement" class="control-label" th:text="#{app.web.cursilhista.complement.label} + ':'">Complemento:</label>
+					<input type="text" class="form-control" id="complement2" name="complement2" th:field="*{address[1].complement}" th:placeholder="#{app.web.cursilhista.complement.label}" 
+						th:disabled="${isDetails}"/>
+				</div>
+
+				<div th:class="${#fields.hasErrors('address[1].cep')} ? 'col-sm-2 form-group has-error' : 'col-sm-2 form-group'">
+					<label for="cep" class="control-label" th:text="#{app.web.cursilhista.cep.label} + ':'">CEP:</label>
+					<input type="text" class="form-control cep" id="cep2" name="cep2" th:field="*{address[1].cep}" th:placeholder="#{app.web.cursilhista.cep.label}" 
+						th:disabled="${isDetails}"/>
+				</div>
+	
+				<div th:class="${#fields.hasErrors('address[1].neighborhood')} ? 'col-sm-4 form-group has-error' : 'col-sm-4 form-group'">
+					<label for="neighborhood" class="control-label" th:text="#{app.web.cursilhista.neighborhood.label} + ':'">Bairro:</label>
+					<input type="text" class="form-control" id="neighborhood2" name="neighborhood2" th:field="*{address[1].neighborhood}" th:placeholder="#{app.web.cursilhista.neighborhood.label}" 
+						th:disabled="${isDetails}"/>
+				</div>
+	
+				<div th:class="${#fields.hasErrors('address[1].city')} ? 'col-sm-2 form-group has-error' : 'col-sm-2 form-group'">
+					<label for="city" class="control-label" th:text="#{app.web.cursilhista.city.label} + ':'">Cidade:</label>
+					<input type="text" class="form-control" id="city2" name="city2" th:field="*{address[1].city}" th:placeholder="#{app.web.cursilhista.city.label}" 
+						th:disabled="${isDetails}"/>
+				</div>
+	
+				<div th:class="${#fields.hasErrors('address[1].state')} ? 'col-sm-2 form-group has-error' : 'col-sm-2 form-group'">
+					<label for="state" class="control-label" th:text="#{app.web.cursilhista.state.label} + ':'">Estado:</label>
+					<select id="state2" name="state2" class="form-control" th:field="*{address[1].state}" th:disabled="${isDetails}">
+						<option value="">Selecione</option>
+						<option value="AC">AC</option>
+						<option value="AL">AL</option>
+						<option value="AM">AM</option>
+						<option value="AP">AP</option>
+						<option value="BA">BA</option>
+						<option value="CE">CE</option>
+						<option value="DF">DF</option>
+						<option value="ES">ES</option>
+						<option value="GO">GO</option>
+						<option value="MA">MA</option>
+						<option value="MG">MG</option>
+						<option value="MS">MS</option>
+						<option value="MT">MT</option>
+						<option value="PA">PA</option>
+						<option value="PB">PB</option>
+						<option value="PE">PE</option>
+						<option value="PI">PI</option>
+						<option value="PR">PR</option>
+						<option value="RJ">RJ</option>
+						<option value="RN">RN</option>
+						<option value="RS">RS</option>
+						<option value="RO">RO</option>
+						<option value="RR">RR</option>
+						<option value="SC">SC</option>
+						<option value="SE">SE</option>
+						<option value="SP">SP</option>
+						<option value="TO">TO</option>
+					 </select>					
+				</div>
+
+				<input type="hidden" id="address[1].addressType" name="address[1].addressType" th:field="*{address[1].addressType}" />
+												
+			</fieldset>	
+						
+			<div class="modal-footer">
+				<a class="btn btn-default" th:href="${isDetails} ? ${#httpServletRequest.getHeader('referer')} : @{/cursilhista/admin}" th:text="#{app.web.userform.fechar}">Fechar</a>
+				<input id="btnSaveCursilhista" type="submit" class="btn btn-primary" th:value="${buttonLabel}" th:if="${buttonLabel}"/>
+			</div>
+		</form>
+
+	</div>
+</body>
+</html>

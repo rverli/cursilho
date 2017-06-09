@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<dataset>
+	<TB_PAGE ID_PAGE="1" DS_PATH="user/edit" DS_TITLE="Edit User" DS_ACTION="editUser" />
+</dataset>

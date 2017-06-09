@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<head lang="en">
+
+<title th:text="#{app.web.login.title}"></title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<link
+	href="http://cdn.jsdelivr.net/webjars/bootstrap/3.3.6/css/bootstrap.min.css"
+	th:href="@{/webjars/bootstrap/3.3.6/css/bootstrap.min.css}"
+	rel="stylesheet" media="screen" />
+
+<link
+	href="http://cdn.jsdelivr.net/webjars/font-awesome/4.6.2/css/font-awesome.min.css"
+	th:href="@{/webjars/font-awesome/4.6.2/css/font-awesome.min.css}"
+	rel="stylesheet" media="screen" />
+
+<link
+	href="/css/aqualis.css"
+	th:href="@{/css/aqualis.css}"
+	rel="stylesheet" media="screen" />
+
+<link 
+	href="/css/signin.css" 
+	th:href="@{/css/signin.css}" 
+	rel="stylesheet" media="screen"/>
+	
+<script src="http://cdn.jsdelivr.net/webjars/jquery/2.1.4/jquery.min.js"
+	th:src="@{/webjars/jquery/2.1.4/jquery.min.js}" type="text/javascript"></script>
+
+<script
+	src="http://cdn.jsdelivr.net/webjars/bootstrap/3.3.6/js/bootstrap.min.js"
+	th:src="@{/webjars/bootstrap/3.3.6/js/bootstrap.min.js}"
+	type="text/javascript"></script>
+
+	<script>
+		function copyValue(){
+			$("#login").val($("#inputUserName").val());
+		}
+	</script>
+
+</head>
+<body>
+	<nav class="navbar navbar-default" th:fragment="header">
+		<div class="container-fluid">
+			
+			<div id="user_messages" class="col-xs-12 col-sm-6 col-md-4 col-lg-3 pull-right">
+				<div th:replace="fragments/alerts :: alert"></div>
+			</div>
+			
+			<!-- Brand and toggle get grouped for better mobile display -->
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle collapsed"
+					data-toggle="collapse" data-target="#bs-example-navbar-collapse-1"
+					aria-expanded="false">
+					<span class="sr-only">Menu</span> <span class="icon-bar"></span> <span
+						class="icon-bar"></span> <span class="icon-bar"></span>
+				</button>
+				
+				<a class="navbar-brand" th:href="@{/home}">
+					<img th:src="@{/img/logo_cursilho.png}" />
+				</a>
+				
+			</div>
+
+			<!-- Collect the nav links, forms, and other content for toggling -->
+			<div class="collapse navbar-collapse">
+				<ul class="nav navbar-nav navbar-right">
+					<li class="dropdown" sec:authorize="isAuthenticated()"><a href="#" class="dropdown-toggle"
+						data-toggle="dropdown" role="button" aria-haspopup="true"
+						aria-expanded="false" sec:authorize="isAuthenticated()"><i
+						class="fa fa-user fa-fw"></i> <small
+						sec:authentication="name"></small> <span class="caret"></span></a>
+						<ul class="dropdown-menu">
+							<li sec:authorize="isAuthenticated()"><a href="/logout"
+								th:href="@{/logout}"><i class="fa fa-sign-out"
+									aria-hidden="true"></i> Logout</a></li>
+						</ul></li>
+					<!-- <li><img class="powered-by-logo" th:src="@{/img/logo-sicpa.png}" /></li> -->
+				</ul>
+			</div>
+			<!-- /.navbar-collapse -->
+		</div>
+		<!-- /.container-fluid -->
+	</nav>
+
+	<div class="container-fluid vertical-center">
+	
+		<div class="jumbotron col-sm-6 col-md-4 col-lg-3">
+		
+			<form class="form-horizontal" role="form" th:action="@{/login}" method="post">
+			
+				<div class="input-group input-sm">
+					<label for="inputUserName" class="input-group-addon"><i class="fa fa-user"></i></label> 
+					<input type="text" id="inputUserName" class="form-control"
+						th:attr="placeholder=#{app.web.login.username}" required="required"
+						autofocus="autofocus" name="username" />
+				</div>
+				
+				<div class="input-group input-sm">
+					<label for="inputPassword" class="input-group-addon"><i class="fa fa-lock"></i></label> 
+					<input type="password" id="inputPassword" class="form-control"
+						th:attr="placeholder=#{app.web.login.password}" required="required"
+						autofocus="autofocus" name="password" />
+				</div>
+	
+				<div class="input-group input-sm">
+					 <!--<label class="col-md-6"> 
+						<input type="checkbox" value="remember-me" /> 
+						<span th:text="#{app.web.login.rememberme}" ></span>
+					</label> -->
+					
+					<label class="col-md-12 text-right"> 
+						<a th:href="'#'+requestAccessDialog" th:text="#{app.web.login.forgotpassword}" data-toggle="modal"
+							onclick="copyValue()">Forgot your password?</a>
+					</label>
+				</div>
+				<div class="alert alert-warning fade in" th:if="${param.error}">
+					<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+					<span th:text="#{app.web.login.message.invalid.user}"></span>
+				</div>
+				<div class="alert alert-info fade in" th:if="${param.logout}">
+					<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+					<span th:text="#{app.web.login.message.logout}"></span>
+				</div>
+				
+				<div class="form-actions">
+					<input class="btn btn-lg btn-primary btn-block" type="submit" th:value="#{app.web.login.buttom.label}"></input>
+				</div>
+			</form>
+		</div>
+	</div>
+	
+	<footer class="footer" th:replace="fragments/footer :: footer">
+		<div class="container">
+			<p class="text-muted">&copy; 2013 The Static Templates</p>
+		</div>
+	</footer>
+</body>
+</html>

@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<head lang="en">
+
+<!-- <title th:title-pattern="$DECORATOR_TITLE" th:text="${pageTitle}">Page Title</title> -->
+
+<title th:text="#{app.web.admin.retreathouse.title.table}">List RetreatHouse</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<link rel="shortcut icon" th:href="@{./static/img/favicon.ico}"/>
+
+<link
+	href="http://cdn.jsdelivr.net/webjars/bootstrap/3.3.6/css/bootstrap.min.css"
+	th:href="@{/webjars/bootstrap/3.3.6/css/bootstrap.min.css}"
+	rel="stylesheet" media="screen" />
+
+<link
+	href="http://cdn.jsdelivr.net/webjars/font-awesome/4.6.2/css/font-awesome.min.css"
+	th:href="@{/webjars/font-awesome/4.6.2/css/font-awesome.min.css}"
+	rel="stylesheet" media="screen" />
+	
+<link
+	href="/css/aqualis.css"
+	th:href="@{/css/aqualis.css}"
+	rel="stylesheet" media="screen" />
+	
+<script src="http://cdn.jsdelivr.net/webjars/jquery/2.1.4/jquery.min.js"
+	th:src="@{/webjars/jquery/2.1.4/jquery.min.js}" type="text/javascript"></script>
+
+<script
+	src="http://cdn.jsdelivr.net/webjars/bootstrap/3.3.6/js/bootstrap.min.js"
+	th:src="@{/webjars/bootstrap/3.3.6/js/bootstrap.min.js}"
+	type="text/javascript"></script>
+
+</head>
+<body>
+
+	<div th:replace="fragments/header :: header">
+		<div class="navbar navbar-default navbar-fixed-top">
+			<div class="container">
+				<div class="navbar-header">
+					<a class="navbar-brand" href="#">Static header</a>
+				</div>
+				<div class="navbar-collapse collapse">
+					<ul class="nav navbar-nav">
+						<li class="active"><a href="#">Home</a></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="container">
+		<div id="user_messages" class="col-xs-12 col-sm-6 col-md-4 col-lg-3 pull-right">
+			<div th:replace="fragments/alerts :: alert"></div>
+		</div>
+		<div class="panel panel-default">
+			<!-- Default panel contents -->
+			<div class="panel-heading">
+				<span class="lead" th:text="#{app.web.admin.retreathouse.title.table}">Casa de Retiro
+					List</span>
+			</div>
+			
+				<div class="panel-body">
+					<form class="form-inline" role="form" >
+							
+							<div class="form-group">
+								<label for="name" th:text="#{app.web.retreathouse.name.label} + ':'">Nome</label>
+								<input type="text" id="name" name="name" class="form-control"
+									th:attr="value=${#httpServletRequest.getParameter('name')}, placeholder=#{app.web.retreathouse.name.label}" />
+							</div>
+							 
+							<div class="form-group">
+								<label for="responsable" th:text="#{app.web.retreathouse.responsable.label} + ':'">Responsavel</label>
+								<input type="text" id="responsable" name="responsable" class="form-control"
+									th:attr="value=${#httpServletRequest.getParameter('responsable')}, placeholder=#{app.web.retreathouse.responsable.label}" />							
+							</div>
+							
+							<div class="form-group">
+								<label for="active" th:text="#{app.web.retreathouse.active.label} + ':'">Active</label>
+								<select id="active" name="active" class="form-control">
+									<option></option>
+									<option value="0" th:text="#{app.web.table.no}" th:selected="${#httpServletRequest.getParameter('active') == '0'}">No</option>
+									<option value="1" th:text="#{app.web.table.yes}" th:selected="${#httpServletRequest.getParameter('active') == '1'}">Yes</option>
+								</select>
+							</div>
+
+							<button type="submit" class="btn btn-primary">
+								<i class="fa fa-search" aria-hidden="true"></i>
+								<span class="hidden-xs" th:text="#{app.web.admin.button.search}">Search</span>
+							</button>
+					</form>
+				</div>
+
+				<div class="panel-body">
+					<a th:href="@{add}" class="btn btn-primary btn-sm"><i
+						class="fa fa-plus" aria-hidden="true"></i> <span
+						th:text="#{app.web.admin.addRetreatHouse}">Adicionar</span></a>
+				</div>
+				<div class="table-responsive">
+				<div id="table" class="panel-content">
+					<div th:include="fragments/genericList :: list(isBooleanEditable=true, actions='details,edit,delete')"></div>
+				</div>
+				</div>
+				<div class="panel-footer">
+					<div th:replace="fragments/pagination :: pagination">pagination</div>
+				</div>
+			
+		</div>
+	</div>
+	<footer class="footer" th:replace="fragments/footer :: footer">
+		<div class="container">
+			<p class="text-muted">&copy; 2013 The Static Templates</p>
+		</div>
+	</footer>
+</body>
+</html>

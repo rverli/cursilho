@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+<script src="http://cdn.jsdelivr.net/webjars/jquery/2.1.4/jquery.min.js"
+	th:src="@{/webjars/jquery/2.1.4/jquery.min.js}"></script>
+
+<script
+	src="http://cdn.jsdelivr.net/webjars/bootstrap/3.3.6/js/bootstrap.min.js"
+	th:src="@{/webjars/bootstrap/3.3.6/js/bootstrap.min.js}"
+	type="text/javascript"></script>
+</head>
+<body>
+	<!-- Details -->
+	<div class="col-sm-12" th:fragment='content'>
+		<form class="form-horizontal" th:object="${entity}">
+			<th:block th:each="field,iterStat : ${entityFields}">
+				<div class="form-group">
+					<label class="control-label" th:text="#{app.web.__${entityName}__.__${field}__.label}">label:</label> 
+					<input type="text" class="form-control" disabled="disabled" th:field="*{__${field}__}"></input>
+				</div>
+			</th:block>
+			<div class="modal-footer" th:if="${#httpServletRequest.getHeader('referer')}">
+				<a class="btn btn-default" th:href="${#httpServletRequest.getHeader('referer')}" th:text="#{app.web.userform.fechar}">Fechar</a>
+			</div>  
+		</form>
+	</div>
+</body>
+</html>

@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+<script src="http://cdn.jsdelivr.net/webjars/jquery/2.1.4/jquery.min.js"
+	th:src="@{/webjars/jquery/2.1.4/jquery.min.js}"></script>
+
+<script
+	src="http://cdn.jsdelivr.net/webjars/bootstrap/3.3.6/js/bootstrap.min.js"
+	th:src="@{/webjars/bootstrap/3.3.6/js/bootstrap.min.js}"
+	type="text/javascript"></script>
+
+<script type="text/javascript">
+function validate(evt) {
+	  var theEvent = evt || window.event;
+	  var key = theEvent.keyCode || theEvent.which;
+	  key = String.fromCharCode( key );
+	  var regex = /[0-9]|\./;
+	  if( !regex.test(key) ) {
+	    theEvent.returnValue = false;
+	    if(theEvent.preventDefault) theEvent.preventDefault();
+	  }
+	}
+</script>
+
+</head>
+<body>
+	<!-- Retreat Form -->
+	<div class="col-sm-12" th:fragment='retreatForm'>
+		
+		<form class="form" th:action="@{${formAction}}" th:object="${retreat}" method="post">
+						
+			<div id="user_messages" class="col-xs-12 col-sm-6 col-md-4 col-lg-3 pull-right">
+				<div th:replace="fragments/alerts :: alert"></div>
+			</div>
+			
+			<input type="hidden" name="id" id="id" th:field="*{id}"/>
+			
+			<fieldset>
+				<legend id="info" th:text="#{app.web.retreat.form.global.info.label}">Informações Pessoais</legend>
+				
+				<!-- Número do Retiro -->
+				<div th:class="${#fields.hasErrors('number')} ? 'col-sm-4  form-group has-error' : 'col-sm-4 form-group'">
+					<label for="number" class="control-label" th:text="#{app.web.retreat.number.label} + ':'">Número:</label>
+					<input type="text" onkeypress='validate(event)' class="form-control" id="number" name="number" th:field="*{number}" th:placeholder="#{app.web.retreat.number.label}" 
+						required="required" th:disabled="${isDetails}"/>
+				</div>
+	
+				<!-- Data do Retiro -->
+				<div class="col-sm-3  form-group">
+					<label for="date" th:text="#{app.web.retreat.date.label} + ':'">Date</label>
+					<input type="date" class="form-control" th:value="${date}" th:field="*{date}" id="date" 
+						required="required" th:disabled="${isDetails}" th:placeholder="#{app.web.retreat.date.label}"/>
+				</div>
+				
+				<!-- Casa de Retiro -->
+				<div class="col-sm-6 form-group">
+					<label for="selectRetreatHouse" class="control-label" th:text="#{app.web.retreat.retreatHouse.label} + ':'">Casa de Retiro:</label>
+		            <select id="selectRetreatHouse" class="form-control" th:field="${retreat.retreatHouse}" th:disabled="${isDetails}" required="required">
+	    	            <option value="-1">Selecione Casa de Retiro</option>
+		                <option th:each="c : ${retreatHouses}" th:value="${c.id}"  th:text="${c.name}" th:selected="${c.id == retreat.retreatHouse?.id}"></option>
+	            	</select>
+				</div>
+				
+				<!-- Tipo -->
+				<div th:class="${#fields.hasErrors('type')} ? 'col-sm-2 form-group has-error' : 'col-sm-2 form-group'">
+					<label for="type" class="control-label" th:text="#{app.web.retreat.type.label} + ':'">Tipo</label>
+					<select id="type" name="type" class="form-control" th:field="*{type}" required="required" th:disabled="${isDetails}">
+						<option value="">Selecione</option>
+						<option value="Masculino">Masculino</option>
+						<option value="Feminino">Feminino</option>
+						<option value="Jovem">Jovem</option>
+					 </select>					
+				</div>
+				
+				<!-- Setor -->
+				<div th:class="${#fields.hasErrors('sector')} ? 'col-sm-2 form-group has-error' : 'col-sm-2 form-group'">
+					<label for="sector" class="control-label" th:text="#{app.web.retreat.sector.label} + ':'">Setor</label>
+					<select id="sector" name="sector" class="form-control" th:field="*{sector}" required="required" th:disabled="${isDetails}">
+						<option value="">Selecione</option>
+						<option value="Norte">Norte</option>
+						<option value="Sul">Sul</option>						
+						<option value="Oeste">Oeste</option>
+						<option value="Suburbano">Suburbano</option>
+						<option value="Leopoldina">Leopoldina</option>
+						<option value="Jovem">Jovem</option>
+					 </select>					
+				</div>
+				
+				<!-- Ativo -->
+				<div class="col-sm-4 form-group">
+					<label class="control-label" th:for="${#ids.next('active')}" th:text="#{app.web.retreat.active.label} + ':'"> Ativo:</label>
+					<input type="checkbox" id="active" name="active" th:field="*{active}" th:disabled="${isDetails}"/>
+				</div>
+				
+			</fieldset>
+				
+			<fieldset>
+				
+				<legend id="info" th:text="#{app.web.retreat.form.team.info.label}">Team</legend>
+				
+				<!-- Coordenador -->
+				<div th:class="${#fields.hasErrors('coordinator')} ? 'col-sm-6 form-group has-error' : 'col-sm-6  form-group'">
+					<label for="coordinator" class="control-label" th:text="#{app.web.retreat.coordinator.label} + ':'">Coordinator:</label> 
+					<input type="text" class="form-control" id="coordinator" name="coordinator" th:field="*{coordinator}" th:placeholder="#{app.web.retreat.coordinator.label}"
+						required="required" th:disabled="${isDetails}" />
+				</div>
+	
+				<!-- Base -->
+				<div th:class="${#fields.hasErrors('base')} ? 'col-sm-6 form-group has-error' : 'col-sm-6  form-group'">
+					<label for="base" class="control-label" th:text="#{app.web.retreat.base.label} + ':'">base:</label> 
+					<input type="text" class="form-control" id="base" name="base" th:field="*{base}" th:placeholder="#{app.web.retreat.base.label}"
+						required="required" th:disabled="${isDetails}" />
+				</div>
+				
+				<!-- Secretário -->
+				<div th:class="${#fields.hasErrors('secretary')} ? 'col-sm-6 form-group has-error' : 'col-sm-6  form-group'">
+					<label for="secretary" class="control-label" th:text="#{app.web.retreat.secretary.label} + ':'">secretary:</label> 
+					<input type="text" class="form-control" id="secretary" name="secretary" th:field="*{secretary}" th:placeholder="#{app.web.retreat.secretary.label}"
+						required="required" th:disabled="${isDetails}" />
+				</div>
+				
+				<!-- Segundo Secretário -->
+				<div th:class="${#fields.hasErrors('secondSecretary')} ? 'col-sm-6 form-group has-error' : 'col-sm-6  form-group'">
+					<label for="secondSecretary" class="control-label" th:text="#{app.web.retreat.secondSecretary.label} + ':'">secondSecretary:</label> 
+					<input type="text" class="form-control" id="secondSecretary" name="secondSecretary" th:field="*{secondSecretary}" th:placeholder="#{app.web.retreat.secondSecretary.label}"
+						required="required" th:disabled="${isDetails}" />
+				</div>
+				
+				<!-- Tesoureiro -->
+				<div th:class="${#fields.hasErrors('treasurer')} ? 'col-sm-6 form-group has-error' : 'col-sm-6  form-group'">
+					<label for="treasurer" class="control-label" th:text="#{app.web.retreat.treasurer.label} + ':'">treasurer:</label> 
+					<input type="text" class="form-control" id="treasurer" name="treasurer" th:field="*{treasurer}" th:placeholder="#{app.web.retreat.treasurer.label}"
+						required="required" th:disabled="${isDetails}" />
+				</div>
+				
+				<!-- Segundo Tesoureiro -->
+				<div th:class="${#fields.hasErrors('secondTreasurer')} ? 'col-sm-6 form-group has-error' : 'col-sm-6  form-group'">
+					<label for="secondTreasurer" class="control-label" th:text="#{app.web.retreat.secondTreasurer.label} + ':'">secondTreasurer:</label> 
+					<input type="text" class="form-control" id="secondTreasurer" name="secondTreasurer" th:field="*{secondTreasurer}" th:placeholder="#{app.web.retreat.secondTreasurer.label}"
+						required="required" th:disabled="${isDetails}" />
+				</div>
+				
+				<!-- Chef da Cozinha -->
+				<div th:class="${#fields.hasErrors('chef')} ? 'col-sm-6 form-group has-error' : 'col-sm-6  form-group'">
+					<label for="chef" class="control-label" th:text="#{app.web.retreat.chef.label} + ':'">chef:</label> 
+					<input type="text" class="form-control" id="chef" name="chef" th:field="*{chef}" th:placeholder="#{app.web.retreat.chef.label}"
+						required="required" th:disabled="${isDetails}" />
+				</div>
+				
+				<!-- Segundo Chefe da Cozinha -->
+				<div th:class="${#fields.hasErrors('secondChef')} ? 'col-sm-6 form-group has-error' : 'col-sm-6  form-group'">
+					<label for="secondChef" class="control-label" th:text="#{app.web.retreat.secondChef.label} + ':'">secondChef:</label> 
+					<input type="text" class="form-control" id="secondChef" name="secondChef" th:field="*{secondChef}" th:placeholder="#{app.web.retreat.secondChef.label}"
+						required="required" th:disabled="${isDetails}" />
+				</div>
+				
+				<!-- Chefe da Externa -->
+				<div th:class="${#fields.hasErrors('externalHead')} ? 'col-sm-6 form-group has-error' : 'col-sm-6  form-group'">
+					<label for="externalHead" class="control-label" th:text="#{app.web.retreat.externalHead.label} + ':'">externalHead:</label> 
+					<input type="text" class="form-control" id="externalHead" name="externalHead" th:field="*{externalHead}" th:placeholder="#{app.web.retreat.externalHead.label}"
+						required="required" th:disabled="${isDetails}" />
+				</div>
+				
+				<!-- Segundo Chefe da Externa -->
+				<div th:class="${#fields.hasErrors('secondExternalHead')} ? 'col-sm-6 form-group has-error' : 'col-sm-6  form-group'">
+					<label for="secondExternalHead" class="control-label" th:text="#{app.web.retreat.secondExternalHead.label} + ':'">secondExternalHead:</label> 
+					<input type="text" class="form-control" id="secondExternalHead" name="secondExternalHead" th:field="*{secondExternalHead}" th:placeholder="#{app.web.retreat.secondExternalHead.label}"
+						required="required" th:disabled="${isDetails}" />
+				</div>
+				
+			</fieldset>
+			
+			<div class="modal-footer">
+				<a class="btn btn-default" th:href="${isDetails} ? ${#httpServletRequest.getHeader('referer')} : @{/retreat/admin}" th:text="#{app.web.userform.fechar}">Fechar</a>
+				<input id="btnSaveRetreat" type="submit" class="btn btn-primary" th:value="${buttonLabel}" th:if="${buttonLabel}"/>
+			</div>
+		</form>
+
+	</div>
+</body>
+</html>

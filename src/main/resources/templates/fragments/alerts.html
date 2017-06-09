@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+
+<head>
+<link
+	href="http://cdn.jsdelivr.net/webjars/bootstrap/3.3.6/css/bootstrap.min.css"
+	th:href="@{/webjars/bootstrap/3.3.6/css/bootstrap.min.css}"
+	rel="stylesheet" media="screen" />
+</head>
+
+<body>
+	<div th:fragment="alert" th:if="${message}"
+		class="fade in alert alert-dismissable" th:classappend="${message} ? 'alert-' + ${message.type.name} : 'hidden'">
+		<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+		<th:block th:switch="${message.type.name}">
+			<th:block th:case="success">
+				<i class="fa fa fa-check"></i>
+			</th:block>
+			<th:block th:case="danger">
+				<i class="fa fa fa-times"></i>
+			</th:block>
+			<th:block th:case="warning">
+				<i class="fa fa fa-exclamation-triangle"></i>
+			</th:block>
+			<th:block th:case="*">
+				<i class="fa fa fa-info"></i>
+			</th:block>
+		</th:block>
+		<span th:text="${message}">Test</span>
+	</div>
+	
+	<div th:fragment="alert" th:if="${!#fields.errors().isEmpty()}"
+		class="fade in alert alert-dismissable" th:classappend="'alert-danger'">
+		<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+		<p th:each="err : ${#fields.errors('*')}">
+			<i class="fa fa fa-times"></i> <span th:text="${err}"></span>
+		</p>  
+	</div>
+</body>
+</html>
